@@ -1,10 +1,10 @@
 class ConversationMap:
     @staticmethod
-    def update(self, user, conversation_id):
+    def update(user):
         pass
 
     @staticmethod
-    def get_conversation(self, username):
+    def get_conversation(user):
         pass
 
 
