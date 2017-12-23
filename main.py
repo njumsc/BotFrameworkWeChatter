@@ -5,7 +5,7 @@ from user import User
 
 
 def get_conversation(msg):
-    return conversation.ConversationMap.update(User(msg.user, msg.username))
+    return conversation.ConversationMap.get_conversation(User(msg.user, msg.username))
 
 @itchat.msg_register(TEXT)
 def text_main(msg):
