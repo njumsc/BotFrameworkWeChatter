@@ -3,9 +3,10 @@ from itchat.content import TEXT, PICTURE
 import conversation
 from user import User
 
+conversation_map = conversation.ConversationMap()
 
 def get_conversation(msg):
-    return conversation.ConversationMap.get_conversation(User(msg.user, msg.username))
+    return conversation_map.update(User(msg.user, msg.fromUserName.replace("@","")))
 
 @itchat.msg_register(TEXT)
 def text_main(msg):
@@ -14,7 +15,7 @@ def text_main(msg):
 
 @itchat.msg_register(PICTURE)
 def picture_main(msg):
-    pass
+    msg.user.send("@img@https://tse4-mm.cn.bing.net/th?id=OIP.WUp-KgQ7AWuuZnlSpTZNWgHaEo&p=0&o=5&pid=1.1")
 
-itchat.auto_login()
+itchat.auto_login(hotReload=True)
 itchat.run()

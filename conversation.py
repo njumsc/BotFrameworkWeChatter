@@ -1,5 +1,8 @@
 import time
 import config
+from replier import Replier
+from sender import Sender, start_conversation
+from receiver import Receiver
 
 
 class ConversationMap:
@@ -8,21 +11,14 @@ class ConversationMap:
     def __init__(self):
         self.conversation_dict = {}
 
-    def get_conversation(self, username):
-        for key in self.conversation_dict.keys():
-            if key == username:
-                self.update_conversation_dict(key)
-                return self.conversation_dict[key]
-        return None
-
     def update(self, user):
         conversation = self.conversation_dict.get(user.username)
         if conversation:
             self.update_conversation_dict(user.username)
             return conversation
         else:
-            conversation = Conversation(user, replier())
-            new_conversation_dict = {user.username, conversation}
+            conversation = Conversation(user, Replier(user))
+            new_conversation_dict = {user.username: conversation}
             self.conversation_dict.update(new_conversation_dict)
             return conversation
 
@@ -41,13 +37,10 @@ class ConversationMap:
 class Conversation:
     def __init__(self, user, replier):
         self.user = user
-        self.sender = sender(username)
-        self.conversation_id = sender.start_conversation()
-        self.receiver = receiver(username, conversation_id, replier)
+        self.conversation_id = start_conversation()
+        self.sender = Sender(self.conversation_id, user.username)
+        self.receiver = Receiver(user.username, self.conversation_id, replier)
         self.last_used_time = time.time()
 
     def is_overdue(self, now):
-        if now - self.last_used_time > config.overdue_time:
-            return True
-        else:
-            return False
+        return now - self.last_used_time > config.overdue_time

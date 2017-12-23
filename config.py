@@ -1,2 +1,2 @@
-bot_secret_key = "UaMfGppfJy0.cwA.rBw.tUGY9huPoAtl9Ow4ev3waKKw2i4X4w4Z9PfdVt7gS1Q"
+bot_secret_key = "3DE_3CdX2cU.cwA.DKc._ztsBldFIHxP8w-DiN6BzHfobC6hyB8FVkWEZ-LiaiE"
 overdue_time = 60 * 60
