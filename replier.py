@@ -4,4 +4,4 @@ class Replier(object):
         self.user = user
 
     def text(self, text):
-        self.user.send(text)
+        self.user.send(text, toUserName=self.user.username)
