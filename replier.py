@@ -5,6 +5,3 @@ class Replier(object):
 
     def text(self, text):
         self.user.send(text)
-
-    def picture(self):
-        pass
