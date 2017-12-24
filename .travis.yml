@@ -1,0 +1,15 @@
+language:python
+python:
+    - "3.5"
+
+before_install:
+    "sudo apt-get update"
+install:
+    "pip install -q -r requirements.txt --use-mirrors"
+
+script:
+    "python test/conversationtest.py"
+
+branched:
+    only:
+        - master
