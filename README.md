@@ -2,7 +2,7 @@
 
 这是一个基于[itchat](https://github.com/littlecodersh/ItChat)的、转发发到个人号上的信息到[Microsoft Bot Framework](https://dev.botframework.com/)的转发器。
 
-[![Build Status](https://travis-ci.org/njumsc/BotFrameworkWeChatter.svg?branch=master)]
+![Build Status](https://travis-ci.org/njumsc/BotFrameworkWeChatter.svg?branch=master)
 
 ## 特性
 
