@@ -1,5 +1,6 @@
-import requests, threading, config, urllib.request, time, os, util
+import requests, threading, config, urllib.request, time, os, util, log, re
 from PIL import Image
+
 
 class Receiver:
     def __init__(self, username, conversation_id, replier):
@@ -20,7 +21,7 @@ class Receiver:
             self.watermark = res.get("watermark")
             for activity in res["activities"]:
                 if activity["from"]["id"] != self.username:
-                    self.replier.text(activity["text"])
+                    self.reply_text(activity["text"])
                     attachments = activity.get("attachments")
                     if attachments:
                         for attachment in attachments:
@@ -29,42 +30,66 @@ class Receiver:
                                 self.reply_pic(url)
                             elif attachment["contentType"] == "application/vnd.microsoft.card.hero":
                                 self.reply_hero_card(attachment)
+                    suggested_actions = activity.get("suggestedActions")
+                    if suggested_actions:
+                        self.reply_actions(suggested_actions["actions"], "推荐（请输入括号内的字符串）：")
             time.sleep(config.poll_interval)
+
+    def reply_text(self, text):
+        img_re = "!\[.*\]\(.*\)"
+        s = re.search(img_re, text)
+        if s:
+            real_addr = s.group(0).split("(")[1]
+            real_addr = real_addr[0:len(real_addr)-1]
+            prior = text[0:s.start(0)]
+            self.replier.text(prior)
+            log.info(prior)
+            self.reply_pic(real_addr)
+            self.reply_text(text[s.end(0):])
+        elif text.strip():
+            log.info(text)
+            self.replier.text(text.strip())
+
 
     def reply_hero_card(self, content):
         card = content["content"]
-        self.replier.text("%s\n\n%s" % (card["title"], card["text"]))
-        for image in card["images"]:
-            self.reply_pic(image["url"])
+        title_str = util.or_empty(card.get("title"))
+        if title_str:
+            title_str += '\n\n'
+        title_str += util.or_empty(card.get("text"))
+        self.replier.text(title_str)
+        if card.get("image"):
+            for image in card.get("image"):
+                self.reply_pic(image["url"])
         if len(card["buttons"]) > 0:
-            action = '以下选项可用：\n\n'
-            for button in card["buttons"]:
-                if button["type"] == 'imBack':
-                    title = button["title"]
-                    if title == "Yes":
-                        action += "· 是"
-                    elif title == "No":
-                        action += "· 不"
-                    else:
-                        action += "· " + title
-                    action += "\n\n"
-                elif button["type"] == 'openUrl':
-                    action += '· %s(%s)\n\n' % (button["title"], button["value"])
-            self.replier.text(action)
+            self.reply_actions(card["buttons"], "以下选项可用（请输入括号内的字符串）：")
 
+    def reply_actions(self, actions, prompt):
+        action_str = prompt + '\n'
+        for action in actions:
+            if action["type"] == 'imBack':
+                title = action["title"]
+                if title == "Yes":
+                    action_str += "· 是（是）"
+                elif title == "No":
+                    action_str += "· 不（否）"
+                else:
+                    action_str += "· %s（%s）" % (action["title"], action["value"])
+                action_str += "\n"
+            elif action["type"] == 'openUrl':
+                action_str += '· %s(%s)\n' % (action["title"], action["value"])
+        self.replier.text(action_str)
 
     def reply_pic(self, pic_url):
+        log.info("接收到图片，地址：" + pic_url)
         filename = "%s_%s" % (time.time(), self.conversation_id)
         pngfile = filename + ".png"
         webpfile = filename + ".webp"
-        urllib.request.urlretrieve(pic_url, webpfile)
+        util.download_file(pic_url, webpfile)
         Image.open(webpfile).convert("RGB").save(pngfile, "png")
         self.replier.pic(pngfile)
         os.remove(pngfile)
         os.remove(webpfile)
-
-
-
 
     def start_listening(self):
         self.thread.setDaemon(True)

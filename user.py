@@ -1,5 +1,4 @@
 
-import itchat
 class User:
     def __init__(self, user, username):
         self.user = user

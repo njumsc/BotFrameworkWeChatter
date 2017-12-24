@@ -18,8 +18,9 @@ def text_main(msg):
 
 @itchat.msg_register(PICTURE)
 def picture_main(msg):
-    msg.user.send("@img@https://tse4-mm.cn.bing.net/th?id=OIP.WUp-KgQ7AWuuZnlSpTZNWgHaEo&p=0&o=5&pid=1.1")
+    conv = get_conversation(msg)
+    conv.sender.send_picture(msg)
 
 
-itchat.auto_login(hotReload=True,enableCmdQR=2)
+itchat.auto_login(hotReload=True, enableCmdQR=2)
 itchat.run()

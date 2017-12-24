@@ -1,4 +1,4 @@
-import requests, config, time, json, util
+import requests, json, util, log
 
 
 class Sender:
@@ -17,16 +17,12 @@ class Sender:
             "text": text
         }
         content = json.dumps(data, ensure_ascii=False).encode("utf-8")
-        print(content)
+        log.info("往conversationId(%s)发送文本消息：%s" % (self.conversation_id, text))
 
         res = requests.post(url, data=content, headers=util.auth_header({"Content-Type": "application/json"})).json()
-        print(res)
 
-
-
-
-# def send_picture(self, msg):
-#   itchat.send(msg, self.conversation_id)
+    def send_picture(self, msg):
+        msg.download(msg.fileName)
 
 
 def start_conversation():

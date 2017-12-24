@@ -8,7 +8,7 @@
 - 基于itchat和Bot Framework的DirectLine API
 - 简单易用
 - 支持同时多用户、多会话（conversation）、多条回复
-- 可在无GUI环境运行
+- 可在无GUI环境运行，使用控制台二维码扫码登录
 
 ## 开始使用
 
@@ -18,16 +18,17 @@
 4. `python main.py`，扫码登录
 5. 一切就绪！
 
-## WeChat和Bot Framework支持情况
+## 微信到Framework支持情况
 
-### WeChat到Bot Framework
+### 微信到Bot Framework
 - [x] 文本
 - [ ] 图片
 - [ ] 语音
 - [ ] 视频
 
-### Bot Framework到WeChat
+### Bot Framework到微信
 - [x] 文本
+- [x] markdown文本带图片 将会把信息以图片分割成多次信息 
 - [x] 图片
 - [x] [HeroCard](https://docs.microsoft.com/en-us/bot-framework/rest-api/bot-framework-rest-connector-add-rich-cards)
 
@@ -37,4 +38,12 @@
     |----------|-------------|
     | openUrl | `· {title}({url})` |
     | imBack | `· {title}` |
+- [x] SuggestedActions 为内容后新的一条信息，表现形式同HeroCard的CardAction部分
 
+### Config.py参数解释
+
+| 参数 | 解释 |
+| --- | ---- |
+| bot_secret_key | Bot DirectLine的Secret Key |
+| poll_interval | 通过HTTP GET获得消息的轮询间隔，以秒为单位 |
+| overdue_time | conversation维持时间。超过这个时间没有更新的conversation将会被抛弃。以秒为单位。|
