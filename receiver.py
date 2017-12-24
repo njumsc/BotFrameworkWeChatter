@@ -70,9 +70,9 @@ class Receiver:
             if action["type"] == 'imBack':
                 title = action["title"]
                 if title == "Yes":
-                    action_str += "· 是（是）"
+                    action_str += "· 是（Yes）"
                 elif title == "No":
-                    action_str += "· 不（否）"
+                    action_str += "· 不（No）"
                 else:
                     action_str += "· %s（%s）" % (action["title"], action["value"])
                 action_str += "\n"
