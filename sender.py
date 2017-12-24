@@ -1,4 +1,4 @@
-import requests, json, util, log
+import requests, json, util, log, os
 
 
 class Sender:
@@ -22,7 +22,13 @@ class Sender:
         res = requests.post(url, data=content, headers=util.auth_header({"Content-Type": "application/json"})).json()
 
     def send_picture(self, msg):
+        log.info("往conversationId(%s)发送图片消息：" % (self.conversation_id, msg.fileName))
+        url = "https://directline.botframework.com/v3/directline/conversations/%s/upload?userId=%s" % (self.conversation_id, self.user_id)
         msg.download(msg.fileName)
+        file = open(msg.fileName, 'rb')
+        file_content = file.read()
+        requests.post(url, data=file_content, headers=util.auth_header({"Content-Type": "image/png", "Content-Disposition": "name=\"file\"; filename=\"%s\"" % msg.fileName}))
+        os.remove(msg.fileName)
 
 
 def start_conversation():
