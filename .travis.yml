@@ -8,8 +8,9 @@ install:
     "pip install -q -r requirements.txt --use-mirrors"
 
 script:
-    "python test/conversationtest.py"
+    py.test
 
 branched:
     only:
         - master
+        - unittest
