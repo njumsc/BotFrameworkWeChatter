@@ -1,4 +1,5 @@
 import requests, threading, config, urllib.request, time, os, util
+from PIL import Image
 
 class Receiver:
     def __init__(self, username, conversation_id, replier):
@@ -24,11 +25,43 @@ class Receiver:
                     if attachments:
                         for attachment in attachments:
                             if attachment["contentType"] == "image/png":
-                                url = content["contentUrl"]
-                                filename = "%s_%s" % (time.time(), url)
-                                urllib.request.urlretrieve(url, filename)
-                                self.replier.pic(url)
-                                os.remove(filename)
+                                url = attachment["contentUrl"]
+                                self.reply_pic(url)
+                            elif attachment["contentType"] == "application/vnd.microsoft.card.hero":
+                                self.reply_hero_card(attachment)
+            time.sleep(config.poll_interval)
+
+    def reply_hero_card(self, content):
+        card = content["content"]
+        self.replier.text("%s\n\n%s" % (card["title"], card["text"]))
+        for image in card["images"]:
+            self.reply_pic(image["url"])
+        if len(card["buttons"]) > 0:
+            action = '以下选项可用：\n\n'
+            for button in card["buttons"]:
+                if button["type"] == 'imBack':
+                    title = button["title"]
+                    if title == "Yes":
+                        action += "· 是"
+                    elif title == "No":
+                        action += "· 不"
+                    else:
+                        action += "· " + title
+                    action += "\n\n"
+                elif button["type"] == 'openUrl':
+                    action += '· %s(%s)\n\n' % (button["title"], button["value"])
+            self.replier.text(action)
+
+
+    def reply_pic(self, pic_url):
+        filename = "%s_%s" % (time.time(), self.conversation_id)
+        pngfile = filename + ".png"
+        webpfile = filename + ".webp"
+        urllib.request.urlretrieve(pic_url, webpfile)
+        Image.open(webpfile).convert("RGB").save(pngfile, "png")
+        self.replier.pic(pngfile)
+        os.remove(pngfile)
+        os.remove(webpfile)
 
 
 

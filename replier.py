@@ -4,7 +4,7 @@ class Replier(object):
         self.user = user
 
     def text(self, text):
-        self.user.send(text, toUserName=self.user.username)
+        self.user.send_msg(text)
 
     def pic(self, picFilePath):
-        self.user.send("@img@%s"%picFilePath, toUserName=self.user.username)
+        self.user.send_img(picFilePath)
