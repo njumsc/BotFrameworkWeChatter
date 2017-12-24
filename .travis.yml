@@ -7,7 +7,7 @@ install:
   - pip install -r requirements.txt
 # command to run tests
 
-before-script:
+before_script:
   - cd test
 
 script:
