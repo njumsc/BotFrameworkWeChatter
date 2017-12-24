@@ -7,8 +7,9 @@
 ## 特性
 
 - Python 3
-- 基于itchat和Bot Framework的DirectLine API
+- 基于[itchat](https://github.com/littlecodersh/ItChat) Framework的DirectLine API
 - 简单易用
+- 少依赖
 - 支持同时多用户、多会话（conversation）、多条回复
 - 可在无GUI环境运行，使用控制台二维码扫码登录
 
@@ -16,7 +17,7 @@
 
 1. clone本项目
 2. `pip install -r requirements.txt`安装依赖
-3. 配置`util.py`，修改`bot_secret_key`为bot的DirectLine channel的secret key
+3. 配置`config.py`，修改`bot_secret_key`为bot的DirectLine channel的secret key
 4. `python main.py`，扫码登录
 5. 一切就绪！
 
