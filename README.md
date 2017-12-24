@@ -39,7 +39,7 @@
     | type | 表现形式|
     |----------|-------------|
     | openUrl | `· {title}({url})` |
-    | imBack | `· {title}` |
+    | imBack | `· {title}({value})` |
 - [x] SuggestedActions 为内容后新的一条信息，表现形式同HeroCard的CardAction部分
 
 ### Config.py参数解释
