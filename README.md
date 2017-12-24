@@ -7,7 +7,7 @@
 ## 特性
 
 - Python 3
-- 基于[itchat](https://github.com/littlecodersh/ItChat) Framework的DirectLine API
+- 基于[itchat](https://github.com/littlecodersh/ItChat)和Bot Framework的DirectLine API
 - 简单易用
 - 少依赖
 - 支持同时多用户、多会话（conversation）、多条回复
