@@ -6,8 +6,6 @@ from receiver import Receiver
 
 
 class ConversationMap:
-    conversation_dict = {}
-
     def __init__(self):
         self.conversation_dict = {}
 
@@ -25,7 +23,8 @@ class ConversationMap:
     def delete_overdue(self):
         for key in self.conversation_dict.keys():
             if self.conversation_dict[key].is_overdue():
-                self.conversation_dict.pop(key)
+                deleted = self.conversation_dict.pop(key)
+                deleted.dispose()
             else:
                 return
 
@@ -41,6 +40,9 @@ class Conversation:
         self.sender = Sender(self.conversation_id, user.username)
         self.receiver = Receiver(user.username, self.conversation_id, replier)
         self.last_used_time = time.time()
+
+    def dispose(self):
+        self.receiver.dispose()
 
     def is_overdue(self, now):
         return now - self.last_used_time > config.overdue_time

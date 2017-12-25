@@ -10,12 +10,13 @@ class Receiver:
         self.thread = threading.Thread(target=lambda: self.listen())
         self.watermark = None
         self.start_listening()
+        self.thread_stop_flag = False
 
     def url(self):
         return "https://directline.botframework.com/v3/directline/conversations/%s/activities%s" % (self.conversation_id, "?watermark=" + self.watermark if self.watermark else "")
 
     def listen(self):
-        while True:
+        while not self.thread_stop_flag:
             url = self.url()
             res = requests.get(url, headers=util.auth_header()).json()
             self.watermark = res.get("watermark")
@@ -94,4 +95,7 @@ class Receiver:
     def start_listening(self):
         self.thread.setDaemon(True)
         self.thread.start()
+    
+    def dispose(self):
+        self.thread_stop_flag = True
 
