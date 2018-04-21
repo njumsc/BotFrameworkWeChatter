@@ -7,10 +7,11 @@ class Receiver:
         self.conversation_id = conversation_id
         self.replier = replier
         self.username = username
+        self.thread_stop_flag = False
         self.thread = threading.Thread(target=lambda: self.listen())
         self.watermark = None
         self.start_listening()
-        self.thread_stop_flag = False
+
 
     def url(self):
         return "https://directline.botframework.com/v3/directline/conversations/%s/activities%s" % (self.conversation_id, "?watermark=" + self.watermark if self.watermark else "")
@@ -26,10 +27,12 @@ class Receiver:
                     attachments = activity.get("attachments")
                     if attachments:
                         for attachment in attachments:
-                            if attachment["contentType"] == "image/png":
+                            content_type = attachment["contentType"]
+                            if content_type.startswith("image/"):
+                                ext = content_type.split("/")[1]
                                 url = attachment["contentUrl"]
-                                self.reply_pic(url)
-                            elif attachment["contentType"] == "application/vnd.microsoft.card.hero":
+                                self.reply_pic(url, ext)
+                            elif content_type == "application/vnd.microsoft.card.hero":
                                 self.reply_hero_card(attachment)
                     suggested_actions = activity.get("suggestedActions")
                     if suggested_actions:
@@ -39,6 +42,7 @@ class Receiver:
     def reply_text(self, text):
         img_re = "!\[.*\]\(.*\)"
         s = re.search(img_re, text)
+        log.info(text)
         if s:
             real_addr = s.group(0).split("(")[1]
             real_addr = real_addr[0:len(real_addr)-1]
@@ -81,16 +85,12 @@ class Receiver:
                 action_str += '· %s(%s)\n' % (action["title"], action["value"])
         self.replier.text(action_str)
 
-    def reply_pic(self, pic_url):
+    def reply_pic(self, pic_url, ext):
         log.info("接收到图片，地址：" + pic_url)
-        filename = "%s_%s" % (time.time(), self.conversation_id)
-        pngfile = filename + ".png"
-        webpfile = filename + ".webp"
-        util.download_file(pic_url, webpfile)
-        Image.open(webpfile).convert("RGB").save(pngfile, "png")
-        self.replier.pic(pngfile)
-        os.remove(pngfile)
-        os.remove(webpfile)
+        filename = "%s_%s.%s" % (time.time(), self.conversation_id, ext)
+        util.download_file(pic_url, filename)
+        self.replier.pic(filename)
+        os.remove(filename)
 
     def start_listening(self):
         self.thread.setDaemon(True)
